@@ -1,6 +1,7 @@
 package com.example.hackaton.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,5 +14,9 @@ public class Producto {
 
     private String nombre;
     private String descripcion;
-    
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "id_servicio")
+    private Servicio servicio;
 }
