@@ -20,4 +20,6 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Servicio> serviciosCliente;
+
+    //hola
 }
