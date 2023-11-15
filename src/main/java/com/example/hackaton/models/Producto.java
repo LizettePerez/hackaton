@@ -13,9 +13,8 @@ public class Producto {
     private Long id_producto;
 
     private String nombre;
-    private String descripcion;
 
-    @JsonIgnore
+  @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_servicio")
     private Servicio servicio;
