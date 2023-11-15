@@ -1,14 +1,21 @@
 package com.example.hackaton.controllers;
 
-import com.example.hackaton.models.Servicio;
-import com.example.hackaton.repositories.ServicioRepository;
-import lombok.Data;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import com.example.hackaton.repositories.ServicioRepository;
+import lombok.Data;
+
 
 @CrossOrigin("*")
 @RestController
@@ -47,6 +54,72 @@ public class ServicioRestController {
     public List<CustomServicioResponse> listaServicioPorNombreProductoYMonto(@RequestParam String nombreProducto) {
         List<Object[]> listaServicios = servicioRepository.findAllByMontoAndNombreProducto(nombreProducto);
         return convertirAListaResponse(listaServicios);
+    }
+
+    //http://localhost:8080/servicio/generarExcel
+    @GetMapping("/generarExcel")
+    public ResponseEntity<byte[]> generarExcel(@RequestParam(required = false) String rut,
+                                               @RequestParam(required = false) List<Integer> dias,
+                                               @RequestParam(required = false) String nombreProducto) {
+
+        List<Object[]> listaServicios;
+
+        if (rut != null) {
+            listaServicios = servicioRepository.findAllByMontoAndRut(rut);
+        } else if (dias != null) {
+            listaServicios = servicioRepository.findAllByMontoAndFecha(dias);
+        } else if (nombreProducto != null) {
+            listaServicios = servicioRepository.findAllByMontoAndNombreProducto(nombreProducto);
+        } else {
+            listaServicios = servicioRepository.findAllByMonto();
+        }
+
+        List<CustomServicioResponse> customResponses = convertirAListaResponse(listaServicios);
+
+        byte[] excelBytes = generarArchivoExcel(customResponses);
+
+        String nombreFiltro = (rut != null) ? rut : (dias != null) ? "fecha_" + dias.get(0) : (nombreProducto != null) ? nombreProducto : "default";
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=resultado_" + nombreFiltro + ".xlsx")
+                .body(excelBytes);
+    }
+
+    private byte[] generarArchivoExcel(List<CustomServicioResponse> customResponses) {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Resultados");
+
+            Row headerRow = sheet.createRow(0);
+
+
+            String[] columnas = {"Rut", "Nombre Cliente", "Nombre Banco", "ID Cuenta", "Monto", "Nombre Producto", "ID Servicio"};
+            for (int i = 0; i < columnas.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columnas[i]);
+            }
+
+            int rowNum = 1;
+            for (CustomServicioResponse servicio : customResponses) {
+                Row dataRow = sheet.createRow(rowNum++);
+                dataRow.createCell(0).setCellValue(servicio.getRut());
+                dataRow.createCell(1).setCellValue(servicio.getNombreCliente());
+                dataRow.createCell(2).setCellValue(servicio.getNombreBanco());
+                dataRow.createCell(3).setCellValue(servicio.getIdCuenta());
+                dataRow.createCell(4).setCellValue(servicio.getMonto());
+                dataRow.createCell(5).setCellValue(servicio.getNombreProducto());
+                dataRow.createCell(6).setCellValue(servicio.getIdServicio());
+            }
+
+
+            workbook.write(outputStream);
+
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+        return new byte[0];
     }
 
     private List<CustomServicioResponse> convertirAListaResponse(List<Object[]> listaServicios) {
