@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -33,12 +34,13 @@ public class ServicioRestController {
         return convertirAListaResponse(listaServicios);
     }
 
-    //http://localhost:8080/servicio/listaPorFecha?fecha=10
+    //http://localhost:8080/servicio/listaPorFecha?dias=05
     @GetMapping("/listaPorFecha")
-    public List<CustomServicioResponse> listaServicioPorFechaYMonto() {
-        List<Object[]> listaServicios = servicioRepository.findAllByMontoAndFecha();
+    public List<CustomServicioResponse> listaServicioPorFechaYMonto(@RequestParam List<Integer> dias) {
+        List<Object[]> listaServicios = servicioRepository.findAllByMontoAndFecha(dias);
         return convertirAListaResponse(listaServicios);
     }
+
 
     //http://localhost:8080/servicio/listaPorProducto?nombreProducto=Mis%20Metas
     @GetMapping("/listaPorProducto")

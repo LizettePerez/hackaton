@@ -33,9 +33,11 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
             "JOIN cliente c ON s.id_cliente = c.id_cliente " +
             "JOIN producto p ON s.id_producto = p.id_producto " +
             "JOIN cuenta cu ON cu.id_cliente = c.id_cliente " +
-            "WHERE DATE_FORMAT(s.fecha, '%d') IN ('05', '10', '15', '20') " +
+            "WHERE DAY(s.fecha) IN :dias " +
             "ORDER BY s.monto", nativeQuery = true)
-    List<Object[]> findAllByMontoAndFecha();
+    List<Object[]> findAllByMontoAndFecha(@Param("dias") List<Integer> dias);
+
+
 
     @Query(value = "SELECT c.rut, c.nombre, cu.nombre_banco, cu.id_cuenta, s.monto, p.nombre AS nombre_producto, s.id_servicio " +
             "FROM servicio s " +
