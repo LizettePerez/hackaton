@@ -11,8 +11,4 @@ import java.util.List;
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
 
-    @Query("SELECT c FROM Cliente c WHERE c.rut = :rut")
-    List<Cliente> findByRut(@Param("rut") String rut);
-
-
 }

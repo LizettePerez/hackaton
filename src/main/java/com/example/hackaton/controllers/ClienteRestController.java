@@ -11,13 +11,5 @@ import java.util.List;
 @RestController
 @RequestMapping("/clientes")
 public class ClienteRestController {
-    @Autowired
-    private ClienteRepository clienteRepository;
 
-    //localhost:8080/clientes/buscarPorRut?rut=9345678-2
-    @GetMapping("/buscarPorRut")
-    public List<Cliente> buscarPorRut(@RequestParam String rut) {
-        return clienteRepository.findByRut(rut);
-
-    }
 }

@@ -18,9 +18,36 @@ public class ServicioRestController {
     @Autowired
     ServicioRepository servicioRepository;
 
+
+    //http://localhost:8080/servicio/lista
     @GetMapping("/lista")
     public List<CustomServicioResponse> listaServicioPorMonto() {
         List<Object[]> listaServicios = servicioRepository.findAllByMonto();
+        return convertirAListaResponse(listaServicios);
+    }
+
+    //http://localhost:8080/servicio/listaPorRut?rut=12
+    @GetMapping("/listaPorRut")
+    public List<CustomServicioResponse> listaServicioPorRutYMonto(@RequestParam String rut) {
+        List<Object[]> listaServicios = servicioRepository.findAllByMontoAndRut(rut);
+        return convertirAListaResponse(listaServicios);
+    }
+
+    //http://localhost:8080/servicio/listaPorFecha?fecha=10
+    @GetMapping("/listaPorFecha")
+    public List<CustomServicioResponse> listaServicioPorFechaYMonto() {
+        List<Object[]> listaServicios = servicioRepository.findAllByMontoAndFecha();
+        return convertirAListaResponse(listaServicios);
+    }
+
+    //http://localhost:8080/servicio/listaPorProducto?nombreProducto=Mis%20Metas
+    @GetMapping("/listaPorProducto")
+    public List<CustomServicioResponse> listaServicioPorNombreProductoYMonto(@RequestParam String nombreProducto) {
+        List<Object[]> listaServicios = servicioRepository.findAllByMontoAndNombreProducto(nombreProducto);
+        return convertirAListaResponse(listaServicios);
+    }
+
+    private List<CustomServicioResponse> convertirAListaResponse(List<Object[]> listaServicios) {
         List<CustomServicioResponse> customResponses = new ArrayList<>();
 
         for (Object[] servicioData : listaServicios) {
@@ -38,6 +65,7 @@ public class ServicioRestController {
 
         return customResponses;
     }
+
     @Data
     public class CustomServicioResponse {
         private String rut;
