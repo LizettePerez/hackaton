@@ -10,10 +10,4 @@ import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
-    @Query("SELECT p, s, c FROM Producto p " +
-            "JOIN FETCH p.servicio s " +
-            "JOIN FETCH s.cliente c " +
-            "WHERE p.nombre = :nombreProducto")
-    List<Object[]> findByNombreProducto(@Param("nombreProducto") String nombreProducto);
-
 }

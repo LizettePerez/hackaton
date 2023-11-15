@@ -14,12 +14,4 @@ import java.util.List;
 @RequestMapping("/productos")
 public class ProductoRestController {
 
-    @Autowired
-    ProductoRepository productoRepository;
-
-    @GetMapping("/buscarPorNombreProducto")
-    public List<Object[]> buscarPorNombreProducto(@RequestParam String nombreProducto) {
-        return productoRepository.findByNombreProducto(nombreProducto);
-    }
-
     }

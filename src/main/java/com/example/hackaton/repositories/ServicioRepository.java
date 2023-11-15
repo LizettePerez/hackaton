@@ -1,10 +1,8 @@
 package com.example.hackaton.repositories;
 
-import com.example.hackaton.models.Cliente;
 import com.example.hackaton.models.Servicio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,8 +10,12 @@ import java.util.List;
 @Repository
 public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 
-    @Query(value = "SELECT * FROM servicio ORDER BY monto", nativeQuery = true)
-    List<Servicio> findAllByMonto();
-
+    @Query(value = "SELECT c.rut, c.nombre, cu.nombre_banco, cu.id_cuenta, s.monto, p.nombre AS nombre_producto, s.id_servicio " +
+            "FROM servicio s " +
+            "JOIN cliente c ON s.id_cliente = c.id_cliente " +
+            "JOIN producto p ON s.id_producto = p.id_producto " +
+            "JOIN cuenta cu ON cu.id_cliente = c.id_cliente " +
+            "ORDER BY s.monto", nativeQuery = true)
+    List<Object[]> findAllByMonto();
 
 }

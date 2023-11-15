@@ -19,8 +19,11 @@ public class Servicio {
   @JoinColumn(name = "id_cliente")
   private Cliente cliente;
 
-  @OneToMany(mappedBy = "servicio", cascade = CascadeType.ALL)
-  private List<Producto> productoServicio;
+  @JsonIgnore
+  @ManyToOne
+  @JoinColumn(name = "id_producto")
+  private Producto producto;
+
 
   @JsonFormat(pattern = "dd.MM.yyyy")
   private Date fecha;

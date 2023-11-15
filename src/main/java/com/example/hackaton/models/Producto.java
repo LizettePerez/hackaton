@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class Producto {
@@ -14,8 +16,6 @@ public class Producto {
 
     private String nombre;
 
-  @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "id_servicio")
-    private Servicio servicio;
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    private List<Servicio> serviciosProducto;
 }
